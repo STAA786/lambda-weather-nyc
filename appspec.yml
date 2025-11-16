@@ -1,0 +1,20 @@
+version: 0.0
+
+# AWS CodeDeploy AppSpec file for Lambda deployment
+# Defines how CodeDeploy should deploy new Lambda function versions
+
+Resources:
+  - weatherLambdaNYC:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "weatherLambdaNYC"
+        Alias: "live"
+        CurrentVersion: "1"
+        TargetVersion: "2"
+
+Hooks:
+  # BeforeAllowTraffic: Run validation before switching traffic
+  - BeforeAllowTraffic: "LambdaFunctionToValidateBeforeTrafficShift"
+  
+  # AfterAllowTraffic: Run validation after traffic switch
+  - AfterAllowTraffic: "LambdaFunctionToValidateAfterTrafficShift"
