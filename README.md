@@ -1,5 +1,3 @@
-# lambda-weather-nyc
-AWS Lambda function for NYC weather data
 
 # 🌤️ AWS Lambda Weather Function - NYC Real-Time Weather Data
 
