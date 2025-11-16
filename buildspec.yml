@@ -1,0 +1,51 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - echo "Installing Python 3.9"
+      - python --version
+      
+  pre_build:
+    commands:
+      - echo "=========================================="
+      - echo "PRE_BUILD - Verifying Files"
+      - echo "=========================================="
+      - pwd
+      - ls -lah
+      - echo "Checking lambda_function.py..."
+      - ls -l lambda_function.py
+      
+  build:
+    commands:
+      - echo "=========================================="
+      - echo "BUILD - Creating Deployment Package"
+      - echo "=========================================="
+      - echo "Packaging Lambda function..."
+      - zip lambda-deployment-package.zip lambda_function.py
+      - echo "Package created:"
+      - ls -lh lambda-deployment-package.zip
+      - echo "Package contents:"
+      - unzip -l lambda-deployment-package.zip
+      - echo "Build completed successfully!"
+      
+  post_build:
+    commands:
+      - echo "=========================================="
+      - echo "POST_BUILD - Artifact Ready"
+      - echo "=========================================="
+      - echo "Artifact will be uploaded to S3"
+      - du -h lambda-deployment-package.zip
+      - echo "Build finished at $(date)"
+
+artifacts:
+  files:
+    - lambda-deployment-package.zip
+  name: BuildArtifact
+  discard-paths: no
+
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
