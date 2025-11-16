@@ -1,2 +1,12 @@
-# No external dependencies required
-# Using built-in urllib and json modules
+# Python Package Dependencies for Lambda Weather Function
+# 
+# This project uses only Python built-in libraries:
+# - json: JSON parsing and serialization
+# - os: Environment variable access
+# - urllib.request: HTTP requests to OpenWeatherMap API
+# - urllib.error: HTTP error handling
+#
+# No external packages required for current implementation.
+# Future enhancements may require:
+# - requests>=2.28.0  # Alternative HTTP library with better features
+# - python-dotenv>=0.19.0  # Local environment variable management for testing
