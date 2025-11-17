@@ -1,8 +1,6 @@
 version: 0.2
-
 # AWS CodeBuild specification for Lambda deployment package creation
 # This file defines the build phases and artifact outputs
-
 phases:
   # Install phase: Set up build environment
   install:
@@ -100,11 +98,10 @@ phases:
 # Artifacts configuration: Define build outputs
 artifacts:
   files:
-    - lambda-deployment-package.zip  # Primary deployment package
-  name: BuildArtifact  # Artifact identifier for CodePipeline
-  discard-paths: no  # Preserve directory structure
+    - lambda-deployment-package.zip
+  discard-paths: no
 
 # Cache configuration: Speed up subsequent builds
 cache:
   paths:
-    - '/root/.cache/pip/**/*'  # Cache pip packages
+    - '/root/.cache/pip/**/*'
