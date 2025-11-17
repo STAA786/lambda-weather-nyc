@@ -5,78 +5,28 @@ phases:
     runtime-versions:
       python: 3.9
     commands:
-      - echo "=========================================="
-      - echo "INSTALL PHASE - Environment Setup"
-      - echo "=========================================="
-      - echo "Python version check:"
-      - python --version
-      - echo "Pip version check:"
-      - pip --version
-      - echo "Current user:"
-      - whoami
-      - echo "Current directory:"
-      - pwd
-      - echo "Install phase completed successfully"
-
+      - echo "Installing dependencies..."
+      - pip install --upgrade pip
+  
   pre_build:
     commands:
-      - echo "=========================================="
-      - echo "PRE_BUILD PHASE - Source Validation"
-      - echo "=========================================="
-      - echo "Listing all files in workspace:"
-      - ls -lah
-      - echo "Validating required files:"
-      - |
-          if [ -f lambda_function.py ]; then
-            echo "✓ lambda_function.py found"
-          else
-            echo "✗ ERROR: lambda_function.py not found"
-            exit 1
-          fi
-      - |
-          if [ -f buildspec.yml ]; then
-            echo "✓ buildspec.yml found"
-          else
-            echo "✗ WARNING: buildspec.yml not in workspace"
-          fi
-      - echo "Pre-build validation completed successfully"
-
+      - echo "Pre-build phase started"
+      - echo "Checking for lambda_function.py..."
+      - test -f lambda_function.py || (echo "ERROR: lambda_function.py not found" && exit 1)
+  
   build:
     commands:
-      - echo "=========================================="
-      - echo "BUILD PHASE - Creating Deployment Package"
-      - echo "=========================================="
-      - echo "Step 1: Installing dependencies (if any)"
-      - |
-          if [ -f requirements.txt ] && [ -s requirements.txt ]; then
-            pip install -r requirements.txt -t .
-            echo "Dependencies installed successfully"
-          else
-            echo "No dependencies to install"
-          fi
-      - echo "Step 2: Creating ZIP deployment package"
+      - echo "Build phase started"
+      - echo "Installing requirements if they exist..."
+      - test -f requirements.txt && pip install -r requirements.txt -t . || echo "No requirements.txt"
+      - echo "Creating deployment package..."
       - zip -r lambda-deployment-package.zip lambda_function.py
-      - echo "Step 3: Adding installed dependencies (if any)"
-      - |
-          for dir in */; do
-            if [ -d "$dir" ] && [ "$dir" != "__pycache__/" ]; then
-              zip -r lambda-deployment-package.zip "$dir"
-            fi
-          done
-      - echo "Step 4: Verifying deployment package"
-      - ls -lh lambda-deployment-package.zip
-      - echo "Step 5: Listing package contents"
-      - unzip -l lambda-deployment-package.zip
-
+      - echo "Build phase completed"
+  
   post_build:
     commands:
-      - echo "=========================================="
-      - echo "POST_BUILD PHASE - Final Validation"
-      - echo "=========================================="
-      - du -h lambda-deployment-package.zip
-      - echo "Package ready for deployment"
-      - echo "Build completed at: $(date)"
-      - echo "=========================================="
+      - echo "Post-build phase - package ready"
+      - ls -lh lambda-deployment-package.zip
 
 artifacts:
   files:
