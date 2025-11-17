@@ -1,11 +1,9 @@
 version: 0.2
-# AWS CodeBuild specification for Lambda deployment package creation
-# This file defines the build phases and artifact outputs
+
 phases:
-  # Install phase: Set up build environment
   install:
     runtime-versions:
-      python: 3.9  # Match Lambda runtime version
+      python: 3.9
     commands:
       - echo "=========================================="
       - echo "INSTALL PHASE - Environment Setup"
@@ -19,8 +17,7 @@ phases:
       - echo "Current directory:"
       - pwd
       - echo "Install phase completed successfully"
-  
-  # Pre-build phase: Validate source files
+
   pre_build:
     commands:
       - echo "=========================================="
@@ -28,26 +25,22 @@ phases:
       - echo "=========================================="
       - echo "Listing all files in workspace:"
       - ls -lah
-      - echo ""
       - echo "Validating required files:"
       - |
-        if [ -f lambda_function.py ]; then
-          echo "✓ lambda_function.py found"
-          echo "File size: $(wc -c < lambda_function.py) bytes"
-          echo "Line count: $(wc -l < lambda_function.py) lines"
-        else
-          echo "✗ ERROR: lambda_function.py not found"
-          exit 1
-        fi
+          if [ -f lambda_function.py ]; then
+            echo "✓ lambda_function.py found"
+          else
+            echo "✗ ERROR: lambda_function.py not found"
+            exit 1
+          fi
       - |
-        if [ -f buildspec.yml ]; then
-          echo "✓ buildspec.yml found"
-        else
-          echo "✗ WARNING: buildspec.yml not in workspace (expected)"
-        fi
+          if [ -f buildspec.yml ]; then
+            echo "✓ buildspec.yml found"
+          else
+            echo "✗ WARNING: buildspec.yml not in workspace"
+          fi
       - echo "Pre-build validation completed successfully"
-  
-  # Build phase: Create deployment package
+
   build:
     commands:
       - echo "=========================================="
@@ -55,53 +48,41 @@ phases:
       - echo "=========================================="
       - echo "Step 1: Installing dependencies (if any)"
       - |
-        if [ -f requirements.txt ] && [ -s requirements.txt ]; then
-          echo "Installing packages from requirements.txt..."
-          pip install -r requirements.txt -t .
-          echo "Dependencies installed successfully"
-        else
-          echo "No dependencies to install (using built-in libraries only)"
-        fi
-      - echo ""
+          if [ -f requirements.txt ] && [ -s requirements.txt ]; then
+            pip install -r requirements.txt -t .
+            echo "Dependencies installed successfully"
+          else
+            echo "No dependencies to install"
+          fi
       - echo "Step 2: Creating ZIP deployment package"
       - zip -r lambda-deployment-package.zip lambda_function.py
-      - echo ""
-      - echo "Step 3: Adding installed dependencies to package (if any)"
+      - echo "Step 3: Adding installed dependencies (if any)"
       - |
-        for dir in */; do
-          if [ -d "$dir" ] && [ "$dir" != "__pycache__/" ]; then
-            echo "Adding directory: $dir"
-            zip -r lambda-deployment-package.zip "$dir"
-          fi
-        done
-      - echo ""
+          for dir in */; do
+            if [ -d "$dir" ] && [ "$dir" != "__pycache__/" ]; then
+              zip -r lambda-deployment-package.zip "$dir"
+            fi
+          done
       - echo "Step 4: Verifying deployment package"
       - ls -lh lambda-deployment-package.zip
-      - echo ""
       - echo "Step 5: Listing package contents"
       - unzip -l lambda-deployment-package.zip
-      - echo ""
-      - echo "Build phase completed successfully"
-  
-  # Post-build phase: Final validation
+
   post_build:
     commands:
       - echo "=========================================="
       - echo "POST_BUILD PHASE - Final Validation"
       - echo "=========================================="
-      - echo "Deployment package details:"
       - du -h lambda-deployment-package.zip
-      - echo "Package ready for deployment to AWS Lambda"
+      - echo "Package ready for deployment"
       - echo "Build completed at: $(date)"
       - echo "=========================================="
 
-# Artifacts configuration: Define build outputs
 artifacts:
   files:
     - lambda-deployment-package.zip
   discard-paths: no
 
-# Cache configuration: Speed up subsequent builds
 cache:
   paths:
     - '/root/.cache/pip/**/*'
