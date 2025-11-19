@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.9
+      python: 3.14
     commands:
       - echo "Installing dependencies..."
       - pip install --upgrade pip
@@ -11,22 +11,23 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase started"
-      - echo "Checking for lambda_function.py..."
+      - ls -lh
 
   build:
     commands:
       - echo "Build phase started"
-      - echo "Installing requirements if they exist..."
-      - pip install -r requirements.txt -t . 2>/dev/null || echo "No requirements.txt"
+      # Install dependencies if file exists
+      - if [ -f requirements.txt ]; then pip install -r requirements.txt -t .; else echo "No requirements.txt"; fi
       - echo "Creating deployment package..."
-      - zip -r lambda-deployment-package.zip lambda_function.py
-      - echo "Build phase completed"
+      # IMPORTANT: Zip must match CodePipeline Lambda deploy requirement
+      - zip -r lambda_function.zip lambda_function.py
+      - echo "Zip creation completed"
 
   post_build:
     commands:
-      - echo "Post-build phase - package ready"
-      - ls -lh lambda-deployment-package.zip
+      - echo "Post-build phase - validating output"
+      - ls -lh lambda_function.zip
 
 artifacts:
   files:
-    - lambda-deployment-package.zip
+    - lambda_function.zip
