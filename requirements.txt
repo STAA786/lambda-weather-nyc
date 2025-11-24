@@ -1,5 +1,7 @@
 # Python Package Dependencies for Lambda Weather Function
-# 
+
+# requests
+
 # This project uses only Python built-in libraries:
 # - json: JSON parsing and serialization
 # - os: Environment variable access
