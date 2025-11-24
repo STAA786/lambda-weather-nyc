@@ -56,7 +56,7 @@ This project implements an automated serverless solution for retrieving real-tim
 | Component              | Technology             | Version | Purpose                               |
 |------------------------|------------------------|---------|----------------------------------------|
 | Source Control         | GitHub                 | -       | Version control and collaboration      |
-| Programming Language   | Python                 | 3.9     | Lambda function development            |
+| Programming Language   | Python                 | 3.14     | Lambda function development            |
 | Build Automation       | AWS CodeBuild          | -       | Automated build process                |
 | Deployment Automation  | AWS CodeDeploy         | -       | Lambda function deployment             |
 | Pipeline Orchestration | AWS CodePipeline       | -       | End-to-end workflow automation         |
